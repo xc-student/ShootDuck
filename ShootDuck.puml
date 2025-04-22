@@ -1,0 +1,139 @@
+@startuml ShootDuck
+
+' Layout settings
+skinparam class {
+    BackgroundColor White
+    ArrowColor Black
+    BorderColor Black
+    BorderThickness 1
+}
+skinparam linetype ortho
+skinparam nodesep 100
+skinparam ranksep 100
+skinparam padding 4
+skinparam roundcorner 10
+
+' Core Game Class
+class Main {
+    ' Core Game Properties
+    == Game Properties ==
+    - gameState: GameState
+    - currentDifficulty: Difficulty
+    - planeX, planeY: float
+    - lives: int
+    - score: int
+    - coins: int
+    
+    ' Core Game Loop
+    == Game Loop ==
+    + create(): void
+    + render(): void
+    + dispose(): void
+    
+    ' Game Logic
+    == Game Logic ==
+    - updateBullets(deltaTime: float)
+    - checkCollisions()
+    - updateMonsters(deltaTime: float)
+    - spawnBoss()
+    
+    ' State Management
+    == State Management ==
+    - handleInput()
+    - handleMenuInput()
+    - handleShopInput()
+}
+
+' Game States
+enum GameState {
+    MENU
+    PLAYING
+    PAUSED
+    SHOP
+    GAME_OVER
+}
+
+enum Difficulty {
+    EASY
+    NORMAL
+    HARD
+}
+
+' Game Entities
+class Monster {
+    - x, y: float
+    - health: int
+    - type: MonsterType
+    --
+    + update(deltaTime: float)
+    + takeDamage()
+    + shoot()
+}
+
+class Bullet {
+    - x, y: float
+    - velocity: float
+    - isEnemy: boolean
+    --
+    + move(deltaTime: float)
+    + checkCollision()
+}
+
+enum MonsterType {
+    NORMAL
+    FAST
+    TOUGH
+}
+
+' Game Systems
+class ShopSystem {
+    - totalCoins: int
+    - unlockedGuns: List
+    --
+    + purchaseGun()
+    + upgradeGun()
+}
+
+class AudioSystem {
+    - gameMusic: Music
+    - shootSound: Sound
+    --
+    + playSound()
+    + updateMusic()
+}
+
+' Key Relationships
+Main -right-> GameState : "current state"
+Main -right-> Difficulty : "difficulty level"
+Main -down-> Monster : "manages"
+Main -down-> Bullet : "manages"
+Main -left-> ShopSystem : "uses"
+Main -left-> AudioSystem : "uses"
+
+Monster -up-> MonsterType : "type"
+Monster ..> Bullet : "creates"
+
+note right of Main
+<b>Game Loop Explanation:</b>
+1. Input Handling (handleInput)
+2. Update Game State
+3. Update Entities (bullets, monsters)
+4. Check Collisions
+5. Render Frame
+end note
+
+note bottom of Monster
+<b>Monster Behavior:</b>
+- Moves based on type
+- Shoots at player
+- Takes damage from bullets
+end note
+
+note left of ShopSystem
+<b>Shop Features:</b>
+- Purchase new guns
+- Upgrade existing guns
+- Manage player coins
+end note
+
+@enduml 

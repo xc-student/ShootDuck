@@ -1,0 +1,21 @@
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+eclipse.project.name = appName + '-core'
+
+dependencies {
+  api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
+  api "com.badlogicgames.gdx:gdx:$gdxVersion"
+
+  if(enableGraalNative == 'true') {
+    implementation "io.github.berstanio:gdx-svmhelper-annotations:$graalHelperVersion"
+  }
+}
+jar {
+    jar {
+    manifest {
+        attributes 'Main-Class': 'com.xc.mygdxgame.lwjgl3.Lwjgl3Launcher'
+    }
+}
+
+    from 'assets' // 使用主文件夹中的 assets 目录
+}
+

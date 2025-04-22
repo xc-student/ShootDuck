@@ -1,0 +1,177 @@
+Duck Shooting Game UML Explanation
+===================================
+
+English Version
+--------------
+
+1. Overall Architecture
+----------------------
+This UML class diagram represents our Duck Shooting game's architecture. The game is divided into four main components:
+- Core Game Class (Main)
+- Game State Management (GameState and Difficulty)
+- Game Entities (Monster and Bullet)
+- Support Systems (ShopSystem and AudioSystem)
+
+2. Main Class (Core Controller)
+------------------------------
+Responsibilities:
+- Game Properties Management
+  * Player position (planeX, planeY)
+  * Game statistics (lives, score, coins)
+  * Current game state and difficulty
+- Game Loop Control
+  * create(): Initializes game components
+  * render(): Handles frame rendering
+  * dispose(): Cleans up resources
+- Game Logic
+  * updateBullets(): Manages bullet movement
+  * checkCollisions(): Handles collision detection
+  * updateMonsters(): Updates monster positions
+  * spawnBoss(): Controls boss appearance
+
+3. State Management
+------------------
+GameState enum:
+- MENU: Main menu display
+- PLAYING: Active gameplay
+- PAUSED: Game paused
+- SHOP: Store interface
+- GAME_OVER: End game state
+
+Difficulty enum:
+- EASY: Beginner level
+- NORMAL: Standard level
+- HARD: Advanced level
+
+4. Game Entities
+---------------
+Monster class:
+- Properties: position (x,y), health, type
+- Methods: update(), takeDamage(), shoot()
+
+Bullet class:
+- Properties: position, velocity, isEnemy
+- Methods: move(), checkCollision()
+
+5. Support Systems
+-----------------
+ShopSystem:
+- Manages in-game currency
+- Handles weapon purchases and upgrades
+- Tracks unlocked items
+
+AudioSystem:
+- Controls game music
+- Manages sound effects
+- Handles audio state changes
+
+6. Key Relationships
+-------------------
+- Main → GameState: Controls game state
+- Main → Monster/Bullet: Manages game entities
+- Main → ShopSystem/AudioSystem: Uses support systems
+- Monster → Bullet: Creates projectiles
+
+7. Game Loop Process
+-------------------
+1. Input Handling (handleInput)
+2. Game State Update
+3. Entity Updates (bullets, monsters)
+4. Collision Detection
+5. Frame Rendering
+
+中文版本
+--------
+
+1. 整体架构
+-----------
+这个UML类图展示了射击鸭子游戏的架构设计，分为四个主要部分：
+- 核心游戏类（Main）
+- 游戏状态管理（GameState和Difficulty）
+- 游戏实体（Monster和Bullet）
+- 辅助系统（ShopSystem和AudioSystem）
+
+2. Main类（核心控制器）
+----------------------
+主要职责：
+- 游戏属性管理
+  * 玩家位置（planeX, planeY）
+  * 游戏统计（生命值、分数、金币）
+  * 当前游戏状态和难度
+- 游戏循环控制
+  * create(): 初始化游戏组件
+  * render(): 处理画面渲染
+  * dispose(): 清理资源
+- 游戏逻辑
+  * updateBullets(): 管理子弹移动
+  * checkCollisions(): 处理碰撞检测
+  * updateMonsters(): 更新怪物位置
+  * spawnBoss(): 控制Boss出现
+
+3. 状态管理
+-----------
+GameState枚举：
+- MENU: 主菜单显示
+- PLAYING: 游戏进行中
+- PAUSED: 游戏暂停
+- SHOP: 商店界面
+- GAME_OVER: 游戏结束
+
+Difficulty枚举：
+- EASY: 简单难度
+- NORMAL: 普通难度
+- HARD: 困难难度
+
+4. 游戏实体
+-----------
+Monster类：
+- 属性：位置(x,y)、生命值、类型
+- 方法：更新、受伤、射击
+
+Bullet类：
+- 属性：位置、速度、是否敌方子弹
+- 方法：移动、碰撞检测
+
+5. 辅助系统
+-----------
+ShopSystem：
+- 管理游戏货币
+- 处理武器购买和升级
+- 追踪已解锁物品
+
+AudioSystem：
+- 控制游戏音乐
+- 管理音效
+- 处理音频状态变化
+
+6. 关键关系
+-----------
+- Main → GameState: 控制游戏状态
+- Main → Monster/Bullet: 管理游戏实体
+- Main → ShopSystem/AudioSystem: 使用辅助系统
+- Monster → Bullet: 创建子弹
+
+7. 游戏循环流程
+--------------
+1. 处理输入（handleInput）
+2. 更新游戏状态
+3. 更新实体（子弹、怪物）
+4. 检测碰撞
+5. 渲染画面
+
+Design Principles (设计原则)
+---------------------------
+1. Encapsulation (封装)
+   - Each class manages its own data and behavior
+   - 每个类管理自己的数据和行为
+
+2. Single Responsibility (单一职责)
+   - Classes have specific, focused roles
+   - 类具有特定的、专注的角色
+
+3. Dependency Management (依赖管理)
+   - Clear relationships between components
+   - 组件之间关系清晰
+
+Note: This explanation can be used for presenting to professors or documenting the project architecture.
+注意：此说明可用于向教授展示或记录项目架构。 
