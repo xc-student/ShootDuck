@@ -31,4 +31,10 @@ Useful Gradle tasks and flags:
 
 Note that most tasks that are not specific to a single project can be run with `name:` prefix, where the `name` should be replaced with the ID of a specific project.
 For example, `core:clean` removes `build` folder only from the `core` project.
-<pre> ```mermaid graph TD A[开始] --> B[写代码] B --> C[调试] C --> D{成功了吗？} D -- 是 --> E[提交 GitHub] D -- 否 --> B ``` </pre>
+graph TD
+    A[开始] --> B[写代码]
+    B --> C[调试]
+    C --> D{成功了吗？}
+    D -- 是 --> E[提交 GitHub]
+    D -- 否 --> B
+
