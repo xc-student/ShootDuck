@@ -22,6 +22,7 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.math.MathUtils;
 
 // Game state enumeration
 enum GameState {
@@ -270,6 +271,16 @@ public class Main extends ApplicationAdapter {
     private float invincibleTimer = 0;
     private static final float INVINCIBLE_DURATION = 2f; // Invincibility time 2 seconds
     private boolean isInvincible = false;
+    
+    // Hit effect variables
+    private float hitEffectTimer = 0;
+    private static final float HIT_EFFECT_DURATION = 0.3f; // Flash effect duration
+    private boolean showHitEffect = false;
+    private float shakeTimer = 0;
+    private static final float SHAKE_DURATION = 0.3f;
+    private static final float SHAKE_INTENSITY = 5.0f;
+    private float shakeOffsetX = 0;
+    private float shakeOffsetY = 0;
 
     // Keep these declarations
     private Texture bulletTexture;    // Plane bullet texture
@@ -455,7 +466,10 @@ public class Main extends ApplicationAdapter {
         // Initialize preferences for saving high score and coins
         prefs = Gdx.app.getPreferences("SpaceGame");
         highScore = prefs.getInteger(PREF_HIGH_SCORE, 0);
-        totalCoins = prefs.getInteger("totalCoins", 0);
+        totalCoins = prefs.getInteger("totalCoins", 1000);
+        totalCoins += 1000;
+        prefs.putInteger("totalCoins", totalCoins);
+        prefs.flush();
         loadUnlockedGuns();
         
         // Initialize game objects
@@ -838,6 +852,14 @@ public class Main extends ApplicationAdapter {
                     } else {
                         isInvincible = true;
                         invincibleTimer = 0;
+                        // Add hit effect
+                        showHitEffect = true;
+                        hitEffectTimer = 0;
+                        shakeTimer = 0;
+                        // Initialize shake offset
+                        float angle = random.nextFloat() * 2 * MathUtils.PI;
+                        shakeOffsetX = MathUtils.cos(angle) * SHAKE_INTENSITY;
+                        shakeOffsetY = MathUtils.sin(angle) * SHAKE_INTENSITY;
                     }
                     
                     // Play hit sound effect
@@ -917,6 +939,14 @@ public class Main extends ApplicationAdapter {
                     } else {
                         isInvincible = true;
                         invincibleTimer = 0;
+                        // Add hit effect
+                        showHitEffect = true;
+                        hitEffectTimer = 0;
+                        shakeTimer = 0;
+                        // Initialize shake offset
+                        float angle = random.nextFloat() * 2 * MathUtils.PI;
+                        shakeOffsetX = MathUtils.cos(angle) * SHAKE_INTENSITY;
+                        shakeOffsetY = MathUtils.sin(angle) * SHAKE_INTENSITY;
                     }
                     break;
                 }
@@ -1257,7 +1287,7 @@ public class Main extends ApplicationAdapter {
         
         // Use titleFont to draw game title
         titleFont.setColor(Color.BLACK);
-        String title = "Water Gun Battle";
+        String title = "DuckSplash!";
         layout.setText(titleFont, title);
         float titleX = (viewport.getWorldWidth() - layout.width) / 2;
         float titleY = viewport.getWorldHeight() * 0.8f;
@@ -1431,15 +1461,51 @@ public class Main extends ApplicationAdapter {
         }
         
         if (!isGameOver) {
+            // Update hit effect
+            if (showHitEffect) {
+                hitEffectTimer += Gdx.graphics.getDeltaTime();
+                if (hitEffectTimer >= HIT_EFFECT_DURATION) {
+                    showHitEffect = false;
+                    hitEffectTimer = 0;
+                }
+            }
+            
+            // Update shake effect
+            if (shakeTimer < SHAKE_DURATION) {
+                shakeTimer += Gdx.graphics.getDeltaTime();
+                if (shakeTimer >= SHAKE_DURATION) {
+                    shakeOffsetX = 0;
+                    shakeOffsetY = 0;
+                } else {
+                    float progress = shakeTimer / SHAKE_DURATION;
+                    float damping = 1.0f - progress; // Gradually reduce shake intensity
+                    float angle = random.nextFloat() * 2 * MathUtils.PI;
+                    shakeOffsetX = MathUtils.cos(angle) * SHAKE_INTENSITY * damping;
+                    shakeOffsetY = MathUtils.sin(angle) * SHAKE_INTENSITY * damping;
+                }
+            }
+            
             // Draw plane - in invincible state transparency changes
             float alpha = 1.0f;
             if (isInvincible) {
                 // Lower flashing frequency, use smoother transition
                 alpha = 0.5f + (float)Math.abs(Math.sin(invincibleTimer * 2)) * 0.5f;
             }
-            batch.setColor(1, 1, 1, alpha);
-            batch.draw(planeTexture, planeX, planeY, 
-                     PLANE_WIDTH, PLANE_HEIGHT);
+            
+            // Apply hit effect color
+            if (showHitEffect) {
+                float hitProgress = hitEffectTimer / HIT_EFFECT_DURATION;
+                float flash = 1.0f - hitProgress; // Flash intensity decreases over time
+                batch.setColor(1, 1 - flash * 0.5f, 1 - flash * 0.5f, alpha); // Red tint
+            } else {
+                batch.setColor(1, 1, 1, alpha);
+            }
+            
+            // Draw with shake offset
+            batch.draw(planeTexture, 
+                      planeX + shakeOffsetX, 
+                      planeY + shakeOffsetY, 
+                      PLANE_WIDTH, PLANE_HEIGHT);
         } else {
             // Use smoother fade out effect
             float fadeOut = 1.0f - (gameOverTimer / RESTART_DELAY);
